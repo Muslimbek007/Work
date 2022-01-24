@@ -1,0 +1,69 @@
+@keyframes unorder {
+    from{
+      height: 0;
+    }
+    to{
+      height: 350px;
+    }
+  }
+  @keyframes logo {
+    from{
+      margin-left: 0;
+    }
+    to{
+      margin-left: -30px;
+    }
+  }
+  
+  @keyframes show {
+    from{
+      margin-top: -100px;
+    }
+    to{
+      margin-top: 0px;
+    }
+  }
+  @keyframes width-up {
+    from{
+      height: 0;
+      border-bottom-left-radius: 100%;
+      border-bottom-right-radius: 100%;
+    }
+    to{
+      height: 80.5%;
+      background-color: rgba($color: #fcc236, $alpha: 0.8);
+      border-bottom-left-radius: 0%;
+      border-bottom-right-radius: 0%;
+    }
+  }
+  @keyframes width-up2 {
+    from{
+      height: 0;
+      border-bottom-left-radius: 100%;
+      border-bottom-right-radius: 100%;
+    }
+    to{
+      height: 82.7%;
+      background-color: rgba($color: #fcc236, $alpha: 0.8);
+      border-bottom-left-radius: 0%;
+      border-bottom-right-radius: 0%;
+    }
+  }
+  @keyframes top {
+    from{
+      margin-top: 38px;
+      opacity: 1;
+    }
+    to{
+      margin-top: -38px;
+      opacity: 0;
+    }
+  }
+  @keyframes fade {
+    from{
+      opacity: 0;
+    }
+    to{
+      opacity: 1;
+    }
+  }

@@ -1,0 +1,911 @@
+// Contents
+//
+// Navbar
+// Navbar brand
+// Navbar nav
+// Navbar text
+// Navbar divider
+// Responsive navbar
+// Navbar position
+// Navbar themes
+
+
+// Navbar
+//
+// Provide a static navbar from which we expand to create full-width, fixed, and
+// other navbar variations.
+
+.navbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap; // allow us to do the line break for collapsing content
+  align-items: center;
+  justify-content: space-between; // space out brand from logo
+  padding: $navbar-padding-y $navbar-padding-x;
+
+  // Because flex properties aren't inherited, we need to redeclare these first
+  // few properties so that content nested within behave properly.
+  %container-flex-properties {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .container,
+  .container-fluid {
+    @extend %container-flex-properties;
+  }
+
+  @each $breakpoint, $container-max-width in $container-max-widths {
+    > .container#{breakpoint-infix($breakpoint, $container-max-widths)} {
+      @extend %container-flex-properties;
+    }
+  }
+}
+
+
+// Navbar brand
+//
+// Used for brand, project, or site names.
+
+.navbar-brand {
+  display: inline-block;
+  padding-top: $navbar-brand-padding-y;
+  padding-bottom: $navbar-brand-padding-y;
+  margin-right: $navbar-padding-x;
+  @include font-size($navbar-brand-font-size);
+  line-height: inherit;
+  white-space: nowrap;
+
+  @include hover-focus() {
+    text-decoration: none;
+  }
+}
+
+
+// Navbar nav
+//
+// Custom navbar navigation (doesn't require `.nav`, but does make use of `.nav-link`).
+
+.navbar-nav {
+  display: flex;
+  flex-direction: column; // cannot use `inherit` to get the `.navbar`s value
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+
+  .nav-link {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .dropdown-menu {
+    position: static;
+    float: none;
+  }
+}
+
+
+// Navbar text
+//
+//
+
+.navbar-text {
+  display: inline-block;
+  padding-top: $nav-link-padding-y;
+  padding-bottom: $nav-link-padding-y;
+}
+
+
+// Responsive navbar
+//
+// Custom styles for responsive collapsing and toggling of navbar contents.
+// Powered by the collapse Bootstrap JavaScript plugin.
+
+// When collapsed, prevent the toggleable navbar contents from appearing in
+// the default flexbox row orientation. Requires the use of `flex-wrap: wrap`
+// on the `.navbar` parent.
+.navbar-collapse {
+  flex-basis: 100%;
+  flex-grow: 1;
+  // For always expanded or extra full navbars, ensure content aligns itself
+  // properly vertically. Can be easily overridden with flex utilities.
+  align-items: center;
+}
+
+// Button for toggling the navbar when in its collapsed state
+.navbar-toggler {
+  padding: $navbar-toggler-padding-y $navbar-toggler-padding-x;
+  @include font-size($navbar-toggler-font-size);
+  line-height: 1;
+  background-color: transparent; // remove default button style
+  border: $border-width solid transparent; // remove default button style
+  @include border-radius($navbar-toggler-border-radius);
+
+  @include hover-focus() {
+    text-decoration: none;
+  }
+}
+
+// Keep as a separate element so folks can easily override it with another icon
+// or image file as needed.
+.navbar-toggler-icon {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: middle;
+  content: "";
+  background: 50% / 100% 100% no-repeat;
+}
+
+.navbar-nav-scroll {
+  max-height: $navbar-nav-scroll-max-height;
+  overflow-y: auto;
+}
+
+// Generate series of `.navbar-expand-*` responsive classes for configuring
+// where your navbar collapses.
+.navbar-expand {
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $next: breakpoint-next($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-infix($next, $grid-breakpoints);
+
+    &#{$infix} {
+      @include media-breakpoint-down($breakpoint) {
+        %container-navbar-expand-#{$breakpoint} {
+          padding-right: 0;
+          padding-left: 0;
+        }
+
+        > .container,
+        > .container-fluid {
+          @extend %container-navbar-expand-#{$breakpoint};
+        }
+
+        @each $size, $container-max-width in $container-max-widths {
+          > .container#{breakpoint-infix($size, $container-max-widths)} {
+            @extend %container-navbar-expand-#{$breakpoint};
+          }
+        }
+      }
+
+      @include media-breakpoint-up($next) {
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+
+        .navbar-nav {
+          flex-direction: row;
+
+          .dropdown-menu {
+            position: absolute;
+          }
+
+          .nav-link {
+            padding-right: $navbar-nav-link-padding-x;
+            padding-left: $navbar-nav-link-padding-x;
+          }
+        }
+
+        // For nesting containers, have to redeclare for alignment purposes
+        %container-nesting-#{$breakpoint} {
+          flex-wrap: nowrap;
+        }
+
+        > .container,
+        > .container-fluid {
+          @extend %container-nesting-#{$breakpoint};
+        }
+
+        @each $size, $container-max-width in $container-max-widths {
+          > .container#{breakpoint-infix($size, $container-max-widths)} {
+            @extend %container-nesting-#{$breakpoint};
+          }
+        }
+
+        .navbar-nav-scroll {
+          overflow: visible;
+        }
+
+        .navbar-collapse {
+          display: flex !important; // stylelint-disable-line declaration-no-important
+
+          // Changes flex-bases to auto because of an IE10 bug
+          flex-basis: auto;
+        }
+
+        .navbar-toggler {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+
+// Navbar themes
+//
+// Styles for switching between navbars with light or dark background.
+
+// Dark links against a light background
+.navbar-light {
+  .navbar-brand {
+    color: $navbar-light-brand-color;
+
+    @include hover-focus() {
+      color: $navbar-light-brand-hover-color;
+    }
+  }
+
+  .navbar-nav {
+    .nav-link {
+      color: $navbar-light-color;
+
+      @include hover-focus() {
+        color: $navbar-light-hover-color;
+      }
+
+      &.disabled {
+        color: $navbar-light-disabled-color;
+      }
+    }
+
+    .show > .nav-link,
+    .active > .nav-link,
+    .nav-link.show,
+    .nav-link.active {
+      color: $navbar-light-active-color;
+    }
+  }
+
+  .navbar-toggler {
+    color: $navbar-light-color;
+    border-color: $navbar-light-toggler-border-color;
+  }
+
+  .navbar-toggler-icon {
+    background-image: escape-svg($navbar-light-toggler-icon-bg);
+  }
+
+  .navbar-text {
+    color: $navbar-light-color;
+    a {
+      color: $navbar-light-active-color;
+
+      @include hover-focus() {
+        color: $navbar-light-active-color;
+      }
+    }
+  }
+}
+
+// White links against a dark background
+.navbar-dark {
+  .navbar-brand {
+    color: $navbar-dark-brand-color;
+
+    @include hover-focus() {
+      color: $navbar-dark-brand-hover-color;
+    }
+  }
+
+  .navbar-nav {
+    .nav-link {
+      color: $navbar-dark-color;
+
+      @include hover-focus() {
+        color: $navbar-dark-hover-color;
+      }
+
+      &.disabled {
+        color: $navbar-dark-disabled-color;
+      }
+    }
+
+    .show > .nav-link,
+    .active > .nav-link,
+    .nav-link.show,
+    .nav-link.active {
+      color: $navbar-dark-active-color;
+    }
+  }
+
+  .navbar-toggler {
+    color: $navbar-dark-color;
+    border-color: $navbar-dark-toggler-border-color;
+  }
+
+  .navbar-toggler-icon {
+    background-image: escape-svg($navbar-dark-toggler-icon-bg);
+  }
+
+  .navbar-text {
+    color: $navbar-dark-color;
+    a {
+      color: $navbar-dark-active-color;
+
+      @include hover-focus() {
+        color: $navbar-dark-active-color;
+      }
+    }
+  }
+}
+.bg-color{
+  background-image: url(../img/banner1.jpeg);
+  box-sizing: border-box;
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+.bg-image{
+  background-image: url(../img/banner2.png);
+   width: 1265px;
+   height: 100vh;
+   background-repeat: no-repeat;
+   position: relative;
+   margin-left: 10px;
+   padding-left: 63px;
+   background-size: 1780px;
+}
+.logo-brend{
+  margin-left: -100px;
+  margin-top: 60px;
+}
+.advertise{
+  position: relative;
+}
+.best{
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+  font-size: 40px;
+  margin-left: -56px;
+  margin-top: 150px;
+}
+.Template{
+  position: relative;
+  margin-top: 10px;
+  margin-left: -93px;
+}
+.spacing-1{
+  letter-spacing: 2px;
+}
+.homepages{
+  margin-top: 30px;
+  letter-spacing: 1px;
+  margin-left: -56px;
+  font-size: 16px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.button1{
+  margin-top: 40px;
+  margin-left: -56px;
+  font-weight: 400;
+  font-size: 18px;
+  text-transform: capitalize;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 40px;
+  padding-right: 40px;
+  color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  &:hover{
+    background-color: #fff;
+    color: black;
+  }
+  transition: background-color 0.3s ease,
+  color 0.3s ease;
+}
+.button2{
+  margin-top: 40px;
+  margin-left: 14px;
+  padding: 10px 40px;
+    text-transform: capitalize;
+    font-size: 18px;
+    font-weight: 400;
+    border: 1px solid #fff;
+    display: inline-block;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: black;
+  background-color: white;
+  &:hover{
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+  }
+  transition: background-color 0.3s ease,
+  color 0.3s ease,
+  .1s ease;
+}
+
+.explore{
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.explore2{
+  letter-spacing: 0.2px;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgb(92, 90, 90);
+}
+.image{
+  margin-top: 30px;
+  margin-left: -10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home1.jpeg);
+  z-index: -1;
+}
+.image2{
+  margin-top: 30px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home2.jpeg);
+}
+.image3{
+  margin-top: 30px;
+  margin-left: 10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home3.jpeg);
+}.image4{
+  margin-top: 30px;
+  margin-left: -10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home4.jpeg);
+}.image5{
+  margin-top: 30px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home5.jpeg);
+}.image6{
+  margin-top: 30px;
+  margin-left: 10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home6.jpeg);
+}.image7{
+  margin-top: 30px;
+  margin-left: -10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home7.jpeg);
+}.image8{
+  margin-top: 30px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home8.jpeg);
+}
+.image9{
+  margin-top: 30px;
+  margin-left: 10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home9.jpeg);
+}
+.image10{
+  margin-top: 30px;
+  margin-left: -10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home10.jpeg);
+}
+.image11{
+  margin-top: 30px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/home11.jpeg);
+}
+.image12{
+  margin-top: 30px;
+  margin-left: 10px;
+  width: 350px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0.1px 0.1px 100px rgb(216, 216, 216);
+  background-image: url(../img/coming.jpeg);
+}
+.technology_home{
+  font-size: 23px;
+}
+.awesome{
+  margin-top: 80px;
+  width: 100%;
+  height: 130vh;
+  background-color: #f7fbfd;
+}
+.awesome-future{
+  padding-top: 100px;
+  font-weight: 600;
+}
+.info{
+  letter-spacing: 0.1px;
+}
+body{
+  background-size: cover;
+  font-family: 'Trebuchet MS', sans-serif; 
+}
+
+.typed-out{
+  overflow: hidden;
+  border-right: .15em solid orange;
+  white-space: nowrap;
+  animation: 
+  typing 1s steps(20, end) forwards;
+  font-size: 1.6rem;
+  width: 0;
+}
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+.img4{
+  position: relative;
+  top: 100px;
+  width: 550px;
+  height: 450px;
+}
+.built{
+  margin-top: 210px;
+}
+.provided{
+  margin-top: 30px;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+.Inside{
+  margin-top: 190px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.shadows{
+  box-shadow: 1px 1px 100px rgb(204, 202, 202);
+}
+.imgs1{
+  width: 247.500px;
+  height: 274.266px;
+}
+.imgs2{
+  width: 247.500px;
+  height: 303.438px;
+}
+.imgs3{
+  width: 247.500px;
+  height: 237.016px;
+}
+.imgs4{
+  width: 247.500px;
+  height: 276.375px;
+}
+.imgs5{
+  width: 247.500px;
+  height: 273.156px;
+}
+.imgs6{
+  width: 247.500px;
+  height: 197.734px;
+}
+.imgs7{
+  width: 247.500px;
+  height: 329.109px;
+}
+.imgs8{
+  width: 247.500px;
+  height: 277.688px;
+}
+.imgs9{
+  width: 247.500px;
+  height: 275.797px;
+}
+.imgs10{
+  width: 247.500px;
+  height: 263.250px;
+}
+.imgs11{
+  width: 247.500px;
+  height: 248.812px;
+}
+.imgs12{
+  width: 247.500px;
+  height: 276.953px;
+}
+.mt-sur{
+  margin-top: -20px;
+}
+.mt-sur1{
+  margin-top: -19px;
+}
+
+.move5{
+  margin-top: 110px;
+}
+.move6{
+  width: 292px;
+  height: 122px;
+  margin-top: 86px;
+}
+.digoco-footer{
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.wrapper{
+  display: inline-flex;
+}
+.wrapper .static-txt{
+  font-size: 50px;
+}
+.wrapper .dynamic-txts{
+color: #FC6D6D;
+// line-height: 80px;
+// overflow: hidden;
+margin-left: 15px;
+height: 50px;
+line-height: 48px;
+overflow: hidden;
+}
+.dynamic-txts li{
+  list-style: none;
+}
+.dynamic-txts li span{
+  position: relative;
+
+}
+
+.dynamic-txts li span:after{
+  left: 0;
+  content: "";
+  position: absolute;
+  background-color: rgb(250, 248, 248);
+  height: 100%;
+  width: 100%;
+  border-left: 1px solid black;
+  animation: typing 1.5s 2s steps(10) infinite
+}
+@keyframes typing {
+  100%{
+    left: 100%;
+    margin: 0 -39px 0 39px;
+  }
+}
+.dynamic-txts{
+  background: rgb(250, 248, 248);
+  border-radius: 12px;
+}
+.subject:hover{
+  opacity:1;
+}
+.rang
+{
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: blue;
+  opacity: 0;
+  border-radius: 10px;
+  transition: opacity 0.6s ease;
+}
+.rang:hover{
+  opacity: 0.9;
+}
+
+.move7{
+  margin-left: 1px;
+}
+.subject:hover{
+  opacity: 0.8;
+}
+.icon{
+  text-decoration: none;
+  font-size: 50px;
+  position: relative;
+  top: 260px;
+  padding: 0;
+  width: 10px;
+  height: 10px;
+  opacity: 1;
+  left: 150px;
+  transition: transform 0.6s ease,
+  color 0.5s ease;
+  z-index: 1;
+  color: rgb(255, 255, 255);
+  &:hover{
+    color: rgb(190, 188, 188);
+  }
+}
+.subject:hover .icon{
+  transform: translateY(-170px);
+}
+.animation-type-write{
+  position: relative;
+  top: -51px;
+  left: 100px;
+}
+
+.css-typing p {
+  border-right: .15em solid orange;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: 44px;
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-decoration-line: underline;
+  text-underline-offset: 6px;
+}
+// .css-typing p:nth-child(1) {
+//   width: 6em;
+//   animation: type 4s steps(40);
+//   animation: type 2s steps(40);
+//   animation-fill-mode: backwards;
+// }
+
+
+@keyframes type {
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid orange;
+  }
+  100% {
+    border: none;
+  }
+}
+
+@-webkit-keyframes type {
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid orange;
+  }
+  100% {
+    border: none;
+  }
+}
+
+@keyframes type2 {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid orange;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
+}
+
+@-webkit-keyframes type2 {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid orange;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
+}
+
+@keyframes type3 {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes type3 {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+body{
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.text__shape {
+  left: 8px;
+  position: absolute;
+  top: 189%;
+}
+.text__shape h2 {
+  color: #f7f7f7;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 60px;
+  font-weight: 700;
+  letter-spacing: 15px;
+  writing-mode: vertical-rl;
+  transform: rotate(181.5deg) translateY(50%) translateX(0);
+}
+// .main--man{
